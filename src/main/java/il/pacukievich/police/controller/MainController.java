@@ -3,25 +3,25 @@ package il.pacukievich.police.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-@Controller // Измените @RestController на @Controller
+@Controller
 public class MainController {
 
 		@GetMapping("/admin/dashboard")
 		public String adminDashboard() {
-				return "admin-dashboard"; // Указывает имя шаблона admin-dashboard.html
+				return "admin-dashboard";
 		}
 
 		@GetMapping("/user/profile")
 		public String userProfile() {
-				return "user-profile"; // Указывает имя шаблона user-profile.html
+				return "user-profile";
 		}
 
 		@GetMapping("/public")
 		public String publicPage() {
-				return "public-page"; // Указывает имя шаблона public-page.html
+				return "public-page";
 		}
 		@GetMapping("/")
 		public String mainPage() {
-				return "main-page"; // Указывает имя шаблона public-page.html
+				return "main-page";
 		}
 }
