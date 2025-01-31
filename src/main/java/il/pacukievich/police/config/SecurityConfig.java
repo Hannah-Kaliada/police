@@ -4,8 +4,10 @@ import il.pacukievich.police.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -38,16 +40,18 @@ public class SecurityConfig {
 
 		@Bean
 		public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-				http.csrf().disable()
-								.authorizeRequests()
-								//.requestMatchers("/**").permitAll()
-								.requestMatchers("/public/**").permitAll()
-								.requestMatchers("/admin/**").hasRole("ADMIN")
-								.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-								.anyRequest().authenticated()
-								.and()
-								.formLogin()
-								.permitAll();
+				http
+								.csrf(csrf -> csrf.disable())
+								.authorizeHttpRequests(auth -> auth
+												.requestMatchers("/public/**").permitAll()
+												.requestMatchers("/free/**").permitAll()
+												.requestMatchers("/admin/**").hasRole("ADMIN")
+												.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+												.anyRequest().authenticated()
+								)
+								.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+								.httpBasic(httpBasic -> httpBasic.disable())
+								.formLogin(Customizer.withDefaults());
 
 				return http.build();
 		}
