@@ -4,7 +4,6 @@ import il.pacukievich.police.entities.utilities.InvestigationStatusConverter;
 import il.pacukievich.police.entities.utilities.TypeOfCrimeConverter;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "crimes")
@@ -19,7 +18,7 @@ public class Crime {
 		private TypeOfCrime type;
 
 		@Column(nullable = false)
-		private LocalDateTime crimeDate;
+		private LocalDateTime reportDate;
 
 		@Embedded
 		private Location location;
@@ -48,12 +47,12 @@ public class Crime {
 				this.type = type;
 		}
 
-		public LocalDateTime getCrimeDate() {
-				return crimeDate;
+		public LocalDateTime getReportDate() {
+				return reportDate;
 		}
 
-		public void setCrimeDate(LocalDateTime crimeDate) {
-				this.crimeDate = crimeDate;
+		public void setReportDate(LocalDateTime crimeDate) {
+				this.reportDate = crimeDate;
 		}
 
 		public Location getLocation() {

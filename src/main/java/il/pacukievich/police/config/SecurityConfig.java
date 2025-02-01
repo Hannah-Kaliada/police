@@ -38,21 +38,37 @@ public class SecurityConfig {
 		}
 
 
-		@Bean
-		public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-				http
-								.csrf(csrf -> csrf.disable())
-								.authorizeHttpRequests(auth -> auth
-												.requestMatchers("/public/**").permitAll()
-												.requestMatchers("/free/**").permitAll()
-												.requestMatchers("/admin/**").hasRole("ADMIN")
-												.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-												.anyRequest().authenticated()
-								)
-								.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-								.httpBasic(httpBasic -> httpBasic.disable())
-								.formLogin(Customizer.withDefaults());
+//		@Bean
+//		public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//				http
+//								.csrf(csrf -> csrf.disable())
+//								.authorizeHttpRequests(auth -> auth
+//												.requestMatchers("/public/**").permitAll()
+//												.requestMatchers("/submit-report/**").permitAll()
+//												.requestMatchers("/admin/**").hasRole("ADMIN")
+//												.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+//												.anyRequest().authenticated()
+//								)
+//								.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//								.httpBasic(httpBasic -> httpBasic.disable())
+//								.formLogin(Customizer.withDefaults());
+//
+//				return http.build();
+//		}
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.csrf().disable()
+						.authorizeRequests()
+						//.requestMatchers("/**").permitAll()
+						.requestMatchers("/public/**").permitAll()
+						.requestMatchers("/submit-report/**").permitAll()
+						.requestMatchers("/admin/**").hasRole("ADMIN")
+						.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+						.anyRequest().authenticated()
+						.and()
+						.formLogin()
+						.permitAll();
 
-				return http.build();
-		}
+		return http.build();
+}
 }

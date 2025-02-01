@@ -16,28 +16,27 @@ public class CrimeService {
 				this.crimeRepository = crimeRepository;
 		}
 
-		// Создать новое преступление
+
 		public Crime createCrime(Crime crime) {
 				return crimeRepository.save(crime);
 		}
 
-		// Получить все преступления
+
 		public List<Crime> getAllCrimes() {
 				return crimeRepository.findAll();
 		}
 
-		// Получить преступление по ID
 		public Crime getCrimeById(Long id) {
 				return crimeRepository.findById(id)
 								.orElseThrow(() -> new NullPointerException("Преступление не найдено: id=" + id));
 		}
 
-		// Обновить преступление
+
 		public Crime updateCrime(Long id, Crime updatedCrime) {
 				return crimeRepository.findById(id)
 								.map(crime -> {
 										crime.setType(updatedCrime.getType());
-										crime.setCrimeDate(updatedCrime.getCrimeDate());
+										crime.setReportDate(updatedCrime.getReportDate());
 										crime.setLocation(updatedCrime.getLocation());
 										crime.setDescription(updatedCrime.getDescription());
 										crime.setStatus(updatedCrime.getStatus());
@@ -46,7 +45,7 @@ public class CrimeService {
 								.orElseThrow(() -> new NullPointerException("Преступление не найдено: id=" + id));
 		}
 
-		// Удалить преступление
+
 		public void deleteCrime(Long id) {
 				if (!crimeRepository.existsById(id)) {
 						throw new NullPointerException("Преступление не найдено: id=" + id);

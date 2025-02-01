@@ -7,6 +7,16 @@ import java.math.BigDecimal;
 @Embeddable
 public class Location {
 
+
+		public Location() {
+		}
+
+		public Location(Double latitude, Double longitude, String address) {
+				this.latitude = BigDecimal.valueOf(latitude);
+				this.longitude = BigDecimal.valueOf(longitude);
+				this.address = address;
+		}
+
 		@Column(precision = 9, scale = 6)
 		private BigDecimal latitude;
 

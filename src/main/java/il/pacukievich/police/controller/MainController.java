@@ -18,7 +18,7 @@ public class MainController {
 
 		@GetMapping("/public")
 		public String publicPage() {
-				return "public-page";
+				return "report-page";
 		}
 		@GetMapping("/")
 		public String mainPage() {
