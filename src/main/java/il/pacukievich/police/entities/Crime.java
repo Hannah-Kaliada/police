@@ -21,7 +21,20 @@ public class Crime {
 		private LocalDateTime reportDate;
 
 		@Embedded
+		@AttributeOverrides({
+						@AttributeOverride(name = "latitude", column = @Column(name = "location_latitude")),
+						@AttributeOverride(name = "longitude", column = @Column(name = "location_longitude")),
+						@AttributeOverride(name = "address", column = @Column(name = "location_address"))
+		})
 		private Location location;
+
+		@Embedded
+		@AttributeOverrides({
+						@AttributeOverride(name = "latitude", column = @Column(name = "sender_location_latitude")),
+						@AttributeOverride(name = "longitude", column = @Column(name = "sender_location_longitude")),
+						@AttributeOverride(name = "address", column = @Column(name = "sender_location_address"))
+		})
+		private Location senderLocation;
 
 		@Column(nullable = false, columnDefinition = "TEXT")
 		private String description;
@@ -57,6 +70,13 @@ public class Crime {
 
 		public Location getLocation() {
 				return location;
+		}
+
+		public void setSenderLocation(Location location) {
+				this.senderLocation = location;
+		}
+		public Location getSenderLocation() {
+				return senderLocation;
 		}
 
 		public void setLocation(Location location) {

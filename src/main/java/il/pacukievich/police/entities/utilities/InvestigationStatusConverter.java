@@ -12,18 +12,14 @@ public class InvestigationStatusConverter implements AttributeConverter<Investig
 				if (attribute == null) {
 						return null;
 				}
-				switch (attribute) {
-						case OPEN:
-								return "Открыто";
-						case UNDER_REVIEW:
-								return "На рассмотрении";
-						case CLOSED:
-								return "Закрыто";
-						case SUSPENDED:
-								return "Приостановлено";
-						default:
-								throw new IllegalArgumentException("Неизвестный статус: " + attribute);
-				}
+				return switch (attribute) {
+						case OPEN -> "Открыто";
+						case UNDER_REVIEW -> "На рассмотрении";
+						case CLOSED -> "Закрыто";
+						case SUSPENDED -> "Приостановлено";
+						case APPROVED -> "Подтверждено";
+						default -> throw new IllegalArgumentException("Неизвестный статус: " + attribute);
+				};
 		}
 
 		@Override
@@ -31,17 +27,13 @@ public class InvestigationStatusConverter implements AttributeConverter<Investig
 				if (dbData == null) {
 						return null;
 				}
-				switch (dbData) {
-						case "Открыто":
-								return InvestigationStatus.OPEN;
-						case "На рассмотрении":
-								return InvestigationStatus.UNDER_REVIEW;
-						case "Закрыто":
-								return InvestigationStatus.CLOSED;
-						case "Приостановлено":
-								return InvestigationStatus.SUSPENDED;
-						default:
-								throw new IllegalArgumentException("Неизвестное значение: " + dbData);
-				}
+				return switch (dbData) {
+						case "Открыто" -> InvestigationStatus.OPEN;
+						case "На рассмотрении" -> InvestigationStatus.UNDER_REVIEW;
+						case "Закрыто" -> InvestigationStatus.CLOSED;
+						case "Приостановлено" -> InvestigationStatus.SUSPENDED;
+						case "Подтверждено" -> InvestigationStatus.APPROVED;
+						default -> throw new IllegalArgumentException("Неизвестное значение: " + dbData);
+				};
 		}
 }

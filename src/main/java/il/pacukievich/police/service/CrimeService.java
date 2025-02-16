@@ -40,6 +40,7 @@ public class CrimeService {
 										crime.setLocation(updatedCrime.getLocation());
 										crime.setDescription(updatedCrime.getDescription());
 										crime.setStatus(updatedCrime.getStatus());
+										crime.setSenderLocation(updatedCrime.getSenderLocation());
 										return crimeRepository.save(crime);
 								})
 								.orElseThrow(() -> new NullPointerException("Преступление не найдено: id=" + id));

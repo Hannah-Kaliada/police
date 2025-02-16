@@ -27,14 +27,17 @@ public class CrimeController {
 		public String submitCrimeReport(@RequestParam String crimeType,
 		                                @RequestParam String description,
 		                                @RequestParam String coordinates,
-		                                @RequestParam(required = false) String contact) {
+		                                @RequestParam(required = false) String contact,
+		                                @RequestParam(required = false) String senderCoordinates) { // Добавлен новый параметр
 
 				TypeOfCrime type = TypeOfCrime.valueOf(crimeType);
 
+				// Обработка основных координат
 				String[] coords = coordinates.split(",");
 				Double latitude = Double.parseDouble(coords[0].trim());
 				Double longitude = Double.parseDouble(coords[1].trim());
 
+				// Создание объекта Crime
 				Crime crime = new Crime();
 				crime.setType(type);
 				crime.setReportDate(LocalDateTime.now());
@@ -42,11 +45,19 @@ public class CrimeController {
 				crime.setLocation(new Location(latitude, longitude, "Unknown"));
 				crime.setStatus(InvestigationStatus.UNDER_REVIEW);
 
+				// Обработка senderCoordinates, если они переданы
+				if (senderCoordinates != null && !senderCoordinates.isEmpty()) {
+						String[] senderCoords = senderCoordinates.split(",");
+						Double senderLat = Double.parseDouble(senderCoords[0].trim());
+						Double senderLon = Double.parseDouble(senderCoords[1].trim());
+						crime.setSenderLocation(new Location(senderLat, senderLon, "Unknown"));
+				}
 
 				crimeService.createCrime(crime);
 
 				return "Crime report submitted successfully!";
 		}
+
 
 		@PostMapping("/crimes")
 		public ResponseEntity<Crime> createCrime(@RequestBody Crime crime) {
@@ -55,7 +66,7 @@ public class CrimeController {
 		}
 
 
-		@GetMapping
+		@GetMapping("/getAll")
 		public ResponseEntity<List<Crime>> getAllCrimes() {
 				List<Crime> crimes = crimeService.getAllCrimes();
 				return new ResponseEntity<>(crimes, HttpStatus.OK);

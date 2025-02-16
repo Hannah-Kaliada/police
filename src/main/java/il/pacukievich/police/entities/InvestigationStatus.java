@@ -4,5 +4,6 @@ public enum InvestigationStatus {
 		OPEN,
 		UNDER_REVIEW,
 		CLOSED,
-		SUSPENDED
+		SUSPENDED,
+		APPROVED
 }
