@@ -7,6 +7,7 @@ import il.pacukievich.police.repository.CrimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,14 @@ public class CrimeToAppService {
 				return crimes.stream()
 								.filter(crime -> crime.getStatus() == InvestigationStatus.OPEN ||
 												crime.getStatus() == InvestigationStatus.APPROVED)
+								.map(this::convertToCrimeToApp)
+								.collect(Collectors.toList());
+		}
+
+		public List<CrimeToApp> getCrimesBeforeDate(LocalDateTime date) {
+				List<Crime> crimes = crimeRepository.findAll();
+				return crimes.stream()
+								.filter(crime -> crime.getReportDate().isBefore(date) || crime.getReportDate().isEqual(date))
 								.map(this::convertToCrimeToApp)
 								.collect(Collectors.toList());
 		}
