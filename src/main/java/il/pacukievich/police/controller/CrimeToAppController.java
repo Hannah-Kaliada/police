@@ -1,5 +1,6 @@
 package il.pacukievich.police.controller;
 
+import il.pacukievich.police.entities.Crime;
 import il.pacukievich.police.entities.dto.CrimeToApp;
 import il.pacukievich.police.service.CrimeToAppService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,4 +39,15 @@ public class CrimeToAppController {
 				List<CrimeToApp> crimes = crimeToAppService.getCrimesBeforeDate(parsedDate);
 				return ResponseEntity.ok(crimes);
 		}
+
+		@GetMapping("/within-radius")
+		public ResponseEntity<List<CrimeToApp>> getCrimesWithinRadius(
+						@RequestParam("latitude") double latitude,
+						@RequestParam("longitude") double longitude,
+						@RequestParam("radius") double radius) {
+				List<CrimeToApp> crimes = crimeToAppService.getCrimesWithinRadius(latitude, longitude, radius);
+				return ResponseEntity.ok(crimes);
+		}
+
+
 }
