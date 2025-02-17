@@ -146,6 +146,8 @@
     </style>
     <script src="https://api-maps.yandex.ru/2.1/?apikey=YOUR_YANDEX_API_KEY&lang=ru_RU" type="text/javascript"></script>
     <script>
+        let map;
+
         function initializeMap(coordinates, userCoordinates) {
             // Установка координат отправителя в скрытое поле
             document.getElementById('sender-coordinates').value =
@@ -156,7 +158,7 @@
             document.querySelector('main').style.display = 'block';
 
             // Инициализация карты
-            const map = new ymaps.Map("map", {
+            map = new ymaps.Map("map", {
                 center: coordinates,
                 zoom: 16,
             });
@@ -177,6 +179,40 @@
             document.getElementById('coordinates').value = `${coordinates[0].toFixed(6)}, ${coordinates[1].toFixed(6)}`;
         }
 
+        let markerOffset = 0;
+        function addCrimeMarker(coordinates, description) {
+            // Добавление небольшого смещения, если маркер уже есть на этих координатах
+            const offsetCoordinates = [
+                coordinates[0] + (markerOffset * 0.00001),
+                coordinates[1] + (markerOffset * 0.00001)
+            ];
+            markerOffset++;
+
+            const placemark = new ymaps.Placemark(offsetCoordinates, {
+                hintContent: "Преступление",
+                balloonContent: description
+            }, {
+                preset: 'islands#redDotIcon'
+            });
+
+            // Добавляем маркер на карту
+            map.geoObjects.add(placemark);
+        }
+
+        // Пример вызова функции добавления маркера с данными преступления
+        function loadCrimes() {
+            fetch("http://localhost:8080/api/crimes/open-or-approved")
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Загруженные преступления:", data); // Логирование данных
+                    data.forEach(crime => {
+                        const coordinates = [crime.location.latitude, crime.location.longitude];
+                        console.log("Добавление маркера на координатах:", coordinates);
+                        addCrimeMarker(coordinates, crime.description);
+                    });
+                })
+                .catch(error => console.error("Ошибка загрузки данных:", error));
+        }
         function handleError() {
             document.querySelector('.loader').style.display = 'none';
             document.querySelector('.permission-denied').style.display = 'block';
@@ -203,7 +239,8 @@
                             position.coords.latitude,
                             position.coords.longitude
                         ];
-                        initializeMap(userCoords, userCoords); // Передаем координаты пользователя
+                        initializeMap(userCoords, userCoords);
+                        loadCrimes();
                     },
                     error => {
                         console.error("Ошибка геолокации:", error);

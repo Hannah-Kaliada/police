@@ -1,11 +1,306 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Панель администратора</title>
+    <style>
+        /* Стили для улучшения интерфейса */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .tabs {
+            display: flex;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background-color: #f1f1f1;
+            margin-right: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .tab.active {
+            background-color: #ccc;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        .form-group {
+            margin: 10px 0;
+        }
+        button {
+            margin-right: 5px;
+        }
+        th {
+            cursor: pointer;
+        }
+        .sorted-asc::after {
+            content: " ↑";
+        }
+        .sorted-desc::after {
+            content: " ↓";
+        }
+    </style>
 </head>
 <body>
-<h1>Welcome to the Admin Dashboard!</h1>
+
+<h1>Панель администратора</h1>
+
+<!-- Вкладки -->
+<div class="tabs">
+    <div class="tab active" onclick="showTab('crimeReportsTab')">Отчеты о преступлениях</div>
+    <div class="tab" onclick="showTab('usersTab')">Пользователи</div>
+</div>
+
+<!-- Содержимое вкладок -->
+<div id="crimeReportsTab" class="tab-content active">
+    <!-- Форма для отправки нового отчета о преступлении -->
+    <h2>Отправить отчет о преступлении</h2>
+    <form id="crimeForm">
+        <div class="form-group">
+            <label for="crimeType">Тип преступления:</label>
+            <input type="text" id="crimeType" required />
+        </div>
+        <div class="form-group">
+            <label for="description">Описание:</label>
+            <input type="text" id="description" required />
+        </div>
+        <div class="form-group">
+            <label for="coordinates">Координаты (широта, долгота):</label>
+            <input type="text" id="coordinates" required />
+        </div>
+        <div class="form-group">
+            <label for="contact">Контакт (необязательно):</label>
+            <input type="text" id="contact" />
+        </div>
+        <div class="form-group">
+            <label for="senderCoordinates">Координаты отправителя (необязательно):</label>
+            <input type="text" id="senderCoordinates" />
+        </div>
+        <button type="submit">Отправить отчет</button>
+    </form>
+
+    <hr>
+
+    <!-- Список преступлений -->
+    <h2>Отчеты о преступлениях</h2>
+    <table id="crimeTable">
+        <thead>
+        <tr>
+            <th onclick="sortTable(0)">ID</th>
+            <th onclick="sortTable(1)">Тип</th>
+            <th onclick="sortTable(2)">Описание</th>
+            <th onclick="sortTable(3)">Статус</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<div id="usersTab" class="tab-content">
+    <!-- Пока не реализован функционал для пользователей -->
+    <h2>Пользователи</h2>
+    <p>Функционал для работы с пользователями пока не реализован.</p>
+</div>
+
+<script>
+    // Адрес API для взаимодействия с сервером
+    const API_URL = 'http://localhost:8080/submit-report';
+    let sortOrder = {
+        columnIndex: null,
+        ascending: true
+    };
+
+    // Функция для отображения активной вкладки
+    function showTab(tabId) {
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => tab.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+
+        // Активируем выбранную вкладку
+        document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    // Функция для отправки данных о преступлении
+    async function submitCrimeReport(event) {
+        event.preventDefault();
+
+        const crimeType = document.getElementById('crimeType').value;
+        const description = document.getElementById('description').value;
+        const coordinates = document.getElementById('coordinates').value;
+        const contact = document.getElementById('contact').value;
+        const senderCoordinates = document.getElementById('senderCoordinates').value;
+
+        const formData = new URLSearchParams();
+        formData.append('crimeType', crimeType);
+        formData.append('description', description);
+        formData.append('coordinates', coordinates);
+        if (contact) formData.append('contact', contact);
+        if (senderCoordinates) formData.append('senderCoordinates', senderCoordinates);
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: formData
+            });
+            if (response.ok) {
+                alert('Отчет о преступлении успешно отправлен!');
+                loadCrimes();
+            } else {
+                alert('Не удалось отправить отчет о преступлении.');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    }
+
+    // Функция для загрузки всех преступлений
+    async function loadCrimes() {
+        try {
+            const response = await fetch(API_URL + '/getAll');
+            const crimes = await response.json();
+            const tableBody = document.querySelector('#crimeTable tbody');
+            tableBody.innerHTML = ''; // Очистить таблицу перед загрузкой новых данных
+
+            crimes.forEach(crime => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                        <td>${crime.id}</td>
+                        <td>${crime.type}</td>
+                        <td>${crime.description}</td>
+                        <td>${crime.status}</td>
+                        <td>
+                            <button onclick="deleteCrime(${crime.id})">Удалить</button>
+                            <button onclick="updateCrime(${crime.id})">Обновить</button>
+                        </td>
+                    `;
+                tableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    }
+
+    // Функция для удаления преступления
+    async function deleteCrime(id) {
+        try {
+            const response = await fetch(API_URL + '/' + id, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                alert('Отчет о преступлении успешно удален!');
+                loadCrimes();
+            } else {
+                alert('Не удалось удалить отчет о преступлении.');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    }
+
+    // Функция для обновления преступления
+    async function updateCrime(id) {
+        // Получаем текущее состояние преступления
+        const response = await fetch(API_URL + '/' + id);
+        const crime = await response.json();
+
+        if (!crime) {
+            alert('Преступление не найдено!');
+            return;
+        }
+
+        // Спрашиваем у пользователя новый статус
+        const newStatus = prompt('Введите новый статус для отчета о преступлении (например, UNDER_REVIEW, APPROVED и т.д.):', crime.status);
+        if (!newStatus || newStatus === crime.status) return; // Если статус не изменен, не обновляем
+
+        // Обновляем только статус
+        crime.status = newStatus;
+
+        try {
+            // Отправляем обновленный объект на сервер
+            const updateResponse = await fetch(API_URL + '/' + id, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(crime)
+            });
+
+            if (updateResponse.ok) {
+                alert('Отчет о преступлении успешно обновлен!');
+                loadCrimes();
+            } else {
+                alert('Не удалось обновить отчет о преступлении.');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    }
+
+    // Функция для сортировки таблицы по столбцам
+    function sortTable(columnIndex) {
+        const table = document.getElementById('crimeTable');
+        const rows = Array.from(table.rows).slice(1); // Получаем все строки, кроме заголовка
+        const isNumericColumn = columnIndex === 0; // ID - это числовой столбец
+
+        if (sortOrder.columnIndex === columnIndex) {
+            sortOrder.ascending = !sortOrder.ascending;
+        } else {
+            sortOrder.columnIndex = columnIndex;
+            sortOrder.ascending = true;
+        }
+
+        const sortedRows = rows.sort((rowA, rowB) => {
+            const cellA = rowA.cells[columnIndex].textContent.trim();
+            const cellB = rowB.cells[columnIndex].textContent.trim();
+
+            if (isNumericColumn) {
+                return sortOrder.ascending ? +cellA - +cellB : +cellB - +cellA;
+            } else {
+                return sortOrder.ascending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+            }
+        });
+
+        // Вставляем отсортированные строки обратно в таблицу
+        table.tBodies[0].append(...sortedRows);
+
+        // Обновляем стрелочку для сортировки
+        updateSortIndicators();
+    }
+
+    // Обновление стрелочек сортировки
+    function updateSortIndicators() {
+        const headers = document.querySelectorAll('th');
+        headers.forEach((header, index) => {
+            header.classList.remove('sorted-asc', 'sorted-desc');
+            if (index === sortOrder.columnIndex) {
+                header.classList.add(sortOrder.ascending ? 'sorted-asc' : 'sorted-desc');
+            }
+        });
+    }
+
+    // Инициализация страницы
+    document.getElementById('crimeForm').addEventListener('submit', submitCrimeReport);
+    window.onload = loadCrimes;
+</script>
+
 </body>
 </html>
