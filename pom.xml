@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
-			<version>7.0.0-M1</version>
+			<version>7.0.0-M2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -77,22 +77,38 @@
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
 			<artifactId>jakarta.servlet-api</artifactId>
-			<version>5.0.0</version> <!-- или более подходящую версию -->
+			<version>6.1.0</version> <!-- или более подходящую версию -->
 			<scope>provided</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.deeplearning4j/deeplearning4j-core -->
+			<!-- Deeplearning4j -->
 		<dependency>
 			<groupId>org.deeplearning4j</groupId>
 			<artifactId>deeplearning4j-core</artifactId>
 			<version>1.0.0-M2.1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.nd4j/nd4j-api -->
+
 		<dependency>
 			<groupId>org.nd4j</groupId>
 			<artifactId>nd4j-api</artifactId>
 			<version>1.0.0-M2.1</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.nd4j</groupId>
+			<artifactId>nd4j-native</artifactId>
+			<version>1.0.0-M2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.nd4j</groupId>
+			<artifactId>nd4j-native</artifactId>
+			<version>1.0.0-M2.1</version>
+			<classifier>macosx-arm64</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.bytedeco</groupId>
+			<artifactId>openblas</artifactId>
+			<version>0.3.28-1.5.11</version>
+			<classifier>macosx-arm64</classifier>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>

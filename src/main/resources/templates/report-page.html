@@ -18,6 +18,7 @@
             align-items: center;
             flex-direction: column;
         }
+
         .loader {
             border: 5px solid #f3f3f3;
             border-top: 5px solid #0073e6;
@@ -38,21 +39,30 @@
             text-align: center;
             color: red;
         }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #e9f1fb;
             color: #2a3d66;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
         }
 
         header {
             background-color: #013;
             color: #ffffff;
-            padding: 2rem 2rem;
+            padding: 1rem;
             text-align: center;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             position: relative;
-            height: 50px;
         }
 
         header h1 {
@@ -62,19 +72,19 @@
 
         .logo {
             position: absolute;
-            top: 15px;
             left: 20px;
             scale: 150%;
-            width: auto;
         }
 
         main {
-            padding: 2rem;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: calc(100vh - 200px);
-            flex-direction: column;
+            width: 100%;
+            max-width: 800px;
+            padding: 2rem;
+            text-align: center;
         }
 
         form {
@@ -84,6 +94,9 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         form h2 {
@@ -95,6 +108,8 @@
             display: block;
             margin-bottom: 0.5rem;
             font-weight: bold;
+            text-align: left;
+            width: 100%;
         }
 
         form input, form textarea, form button, form select {
@@ -123,6 +138,7 @@
             border: none;
             cursor: pointer;
             font-size: 1rem;
+            width: 100%;
         }
 
         form button:hover {
@@ -139,7 +155,7 @@
 
         footer {
             text-align: center;
-            margin-top: 3rem;
+            margin-top: 2rem;
             font-size: 0.9rem;
             color: #666;
         }
@@ -149,15 +165,12 @@
         let map;
 
         function initializeMap(coordinates, userCoordinates) {
-            // Установка координат отправителя в скрытое поле
             document.getElementById('sender-coordinates').value =
                 `${userCoordinates[0].toFixed(6)},${userCoordinates[1].toFixed(6)}`;
 
-            // Показать контент
             document.querySelector('.overlay').style.display = 'none';
             document.querySelector('main').style.display = 'block';
 
-            // Инициализация карты
             map = new ymaps.Map("map", {
                 center: coordinates,
                 zoom: 16,
@@ -181,7 +194,6 @@
 
         let markerOffset = 0;
         function addCrimeMarker(coordinates, description) {
-            // Добавление небольшого смещения, если маркер уже есть на этих координатах
             const offsetCoordinates = [
                 coordinates[0] + (markerOffset * 0.00001),
                 coordinates[1] + (markerOffset * 0.00001)
@@ -195,16 +207,14 @@
                 preset: 'islands#redDotIcon'
             });
 
-            // Добавляем маркер на карту
             map.geoObjects.add(placemark);
         }
 
-        // Пример вызова функции добавления маркера с данными преступления
         function loadCrimes() {
             fetch("http://localhost:8080/api/crimes/open-or-approved")
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Загруженные преступления:", data); // Логирование данных
+                    console.log("Загруженные преступления:", data);
                     data.forEach(crime => {
                         const coordinates = [crime.location.latitude, crime.location.longitude];
                         console.log("Добавление маркера на координатах:", coordinates);
@@ -315,7 +325,7 @@
         <label for="coordinates">Координаты места:</label>
         <input type="text" id="coordinates" name="coordinates" readonly>
 
-        <!-- Скрытое поле для координат отправителя -->
+
         <input type="hidden" id="sender-coordinates" name="senderCoordinates">
 
         <label for="full-name">ФИО:</label>
