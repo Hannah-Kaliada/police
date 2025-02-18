@@ -5,24 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Панель администратора</title>
     <style>
-        /* Общие стили */
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f2f2f2;
             margin: 0;
             padding: 20px;
-        }
-        h1 {
-            text-align: center;
             color: #333;
         }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-weight: 700;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
         .container {
             max-width: 900px;
             margin: auto;
-            background: white;
-            padding: 20px;
+            background: #ffffff;
+            padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         /* Стили вкладок */
@@ -30,98 +36,131 @@
             display: flex;
             justify-content: space-around;
             margin-bottom: 20px;
-            border-bottom: 2px solid #ddd;
-        }
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            font-weight: bold;
-            color: #555;
-        }
-        .tab.active {
-            color: #007bff;
-            border-bottom: 3px solid #007bff;
+            border-bottom: 2px solid #7f8c8d;
         }
 
-        /* Контент вкладок */
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #7f8c8d;
+            transition: 0.3s;
+        }
+
+        .tab.active {
+            color: #2980b9;
+            border-bottom: 3px solid #2980b9;
+        }
+
+        .tab:hover {
+            color: #34495e;
+        }
+
         .tab-content {
             display: none;
         }
+
         .tab-content.active {
             display: block;
         }
 
-        /* Форма */
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
+
         label {
             display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
         }
+
         input {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
+            padding: 12px;
+            border: 1px solid #bdc3c7;
             border-radius: 5px;
+            background-color: #ecf0f1;
+            color: #34495e;
+            font-size: 16px;
         }
+
+        input:focus {
+            border-color: #2980b9;
+            outline: none;
+        }
+
         button {
-            background-color: #007bff;
+            background-color: #2980b9;
             color: white;
-            padding: 10px 15px;
+            padding: 12px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-weight: bold;
             transition: 0.3s;
         }
+
         button:hover {
-            background-color: #0056b3;
+            background-color: #3498db;
         }
 
-        /* Таблица */
         table {
             width: 100%;
             border-collapse: collapse;
-            background: white;
+            margin-top: 20px;
         }
+
         th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
+            border: 1px solid #bdc3c7;
+            padding: 12px;
             text-align: left;
+            font-size: 16px;
         }
+
         th {
-            background-color: #f4f4f4;
+            background-color: #ecf0f1;
+            color: #34495e;
             cursor: pointer;
         }
+
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
 
-        /* Поиск */
+        tr:hover {
+            background-color: #eaf2f8;
+        }
+
         #searchInput {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #bdc3c7;
             border-radius: 5px;
+            background-color: #ecf0f1;
+            color: #34495e;
+            font-size: 16px;
+        }
+
+        #searchInput:focus {
+            border-color: #2980b9;
+            outline: none;
         }
     </style>
 </head>
 <body>
 
-<h1>Добро пожаловать на панель администратора!</h1>
+<h1>ПАНЕЛЬ АДМИНИСТРАТОРА</h1>
 
-<!-- Вкладки -->
+
 <div class="tabs">
     <div class="tab active" onclick="showTab('crimeReportsTab')">Отчеты о преступлениях</div>
     <div class="tab" onclick="showTab('usersTab')">Пользователи</div>
 </div>
 
-<!-- Содержимое вкладок -->
 <div id="crimeReportsTab" class="tab-content active">
-    <!-- Форма для отправки нового отчета о преступлении -->
-    <h2>Отправить отчет о преступлении</h2>
+    <h2>Добавить новый отчет о преступлении</h2>
     <form id="crimeForm">
         <div class="form-group">
             <label for="crimeType">Тип преступления:</label>
@@ -148,10 +187,8 @@
 
     <hr>
 
-    <!-- Поиск -->
     <input type="text" id="searchInput" placeholder="Поиск по отчетам..." onkeyup="filterTable()" />
 
-    <!-- Список преступлений -->
     <h2>Отчеты о преступлениях</h2>
     <table id="crimeTable">
         <thead>
@@ -168,20 +205,17 @@
 </div>
 
 <div id="usersTab" class="tab-content">
-    <!-- Пока не реализован функционал для пользователей -->
     <h2>Пользователи</h2>
     <p>Функционал для работы с пользователями пока не реализован.</p>
 </div>
 
 <script>
-    // Адрес API для взаимодействия с сервером
     const API_URL = 'http://localhost:8080/submit-report';
     let sortOrder = {
         columnIndex: null,
         ascending: true
     };
 
-    // Функция для отображения активной вкладки
     function showTab(tabId) {
         const tabs = document.querySelectorAll('.tab');
         const tabContents = document.querySelectorAll('.tab-content');
@@ -189,12 +223,10 @@
         tabs.forEach(tab => tab.classList.remove('active'));
         tabContents.forEach(content => content.classList.remove('active'));
 
-        // Активируем выбранную вкладку
         document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
         document.getElementById(tabId).classList.add('active');
     }
 
-    // Функция для отправки данных о преступлении
     async function submitCrimeReport(event) {
         event.preventDefault();
 
@@ -227,14 +259,12 @@
         }
     }
 
-    // Функция для загрузки всех преступлений
     async function loadCrimes() {
         try {
             const response = await fetch(API_URL + '/getAll');
             const crimes = await response.json();
             const tableBody = document.querySelector('#crimeTable tbody');
-            tableBody.innerHTML = ''; // Очистить таблицу перед загрузкой новых данных
-
+            tableBody.innerHTML = '';
             crimes.forEach(crime => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -254,7 +284,6 @@
         }
     }
 
-    // Функция для удаления преступления
     async function deleteCrime(id) {
         try {
             const response = await fetch(API_URL + '/' + id, {
@@ -271,7 +300,6 @@
         }
     }
 
-    // Функция для обновления преступления
     async function updateCrime(id) {
         try {
             const response = await fetch(`http://localhost:8080/submit-report/${id}`);
@@ -282,7 +310,6 @@
                 return;
             }
 
-            // Создаем модальное окно
             const modal = document.createElement('div');
             modal.classList.add('modal');
             modal.style.cssText = `
@@ -298,7 +325,6 @@
             z-index: 1000;
         `;
 
-            // Создаем контейнер модального окна
             const modalContent = document.createElement('div');
             modalContent.classList.add('modal-content');
             modalContent.style.cssText = `
@@ -308,7 +334,6 @@
             min-width: 400px;
         `;
 
-            // HTML-форма редактирования
             modalContent.innerHTML = `
             <h3>Редактирование отчета #${crime.id}</h3>
             <form id="editForm">
@@ -334,16 +359,13 @@
             modal.appendChild(modalContent);
             document.body.appendChild(modal);
 
-            // Закрытие окна по кнопке "Отмена"
             document.getElementById('closeModal').addEventListener('click', () => {
                 document.body.removeChild(modal);
             });
 
-            // Обработка отправки формы
             document.getElementById('editForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                // Обновление данных объекта
                 crime.type = document.getElementById('editType').value;
                 crime.description = document.getElementById('editDesc').value;
                 crime.status = document.getElementById('editStatus').value;
@@ -372,7 +394,6 @@
         }
     }
 
-    // Функция для фильтрации таблицы
     function filterTable() {
         const searchInput = document.getElementById('searchInput').value.toLowerCase();
         const rows = document.querySelectorAll('#crimeTable tbody tr');
@@ -395,14 +416,14 @@
         });
     }
 
-    // Функция для сортировки таблицы по столбцам
+
     function sortTable(columnIndex) {
         const table = document.getElementById('crimeTable');
-        const rows = Array.from(table.rows).slice(1); // Получаем все строки, кроме заголовка
-        const isNumericColumn = columnIndex === 0; // ID - это числовой столбец
+        const rows = Array.from(table.rows).slice(1);
+        const isNumericColumn = columnIndex === 0;
 
         if (sortOrder.columnIndex === columnIndex) {
-            sortOrder.ascending = !sortOrder.ascending; // Меняем направление сортировки
+            sortOrder.ascending = !sortOrder.ascending;
         } else {
             sortOrder.columnIndex = columnIndex;
             sortOrder.ascending = true;
@@ -422,10 +443,8 @@
             return sortOrder.ascending ? comparison : -comparison;
         });
 
-        // Перерисовываем строки в нужном порядке
         rows.forEach(row => table.appendChild(row));
 
-        // Обновляем классы для сортировки
         const headers = table.querySelectorAll('th');
         headers.forEach((header, index) => {
             header.classList.remove('sorted-asc', 'sorted-desc');
@@ -435,10 +454,8 @@
         });
     }
 
-    // Слушаем отправку формы
     document.getElementById('crimeForm').addEventListener('submit', submitCrimeReport);
 
-    // Загружаем отчеты о преступлениях при загрузке страницы
     window.onload = loadCrimes;
 </script>
 </body>
