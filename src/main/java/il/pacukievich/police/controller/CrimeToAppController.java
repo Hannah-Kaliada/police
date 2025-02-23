@@ -48,6 +48,14 @@ public class CrimeToAppController {
 				List<CrimeToApp> crimes = crimeToAppService.getCrimesWithinRadius(latitude, longitude, radius);
 				return ResponseEntity.ok(crimes);
 		}
-
+		@GetMapping("/between-dates")
+		public ResponseEntity<List<CrimeToApp>> getCrimesBetweenDates(
+						@RequestParam("fromDate") String fromDate,
+						@RequestParam("toDate") String toDate) {
+				LocalDateTime startDate = LocalDateTime.parse(fromDate);
+				LocalDateTime endDate = LocalDateTime.parse(toDate);
+				List<CrimeToApp> crimes = crimeToAppService.getCrimesBetweenDates(startDate, endDate);
+				return ResponseEntity.ok(crimes);
+		}
 
 }

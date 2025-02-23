@@ -77,4 +77,13 @@ public class CrimeToAppService {
 				double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 				return R * c;
 		}
+		public List<CrimeToApp> getCrimesBetweenDates(LocalDateTime fromDate, LocalDateTime toDate) {
+				List<Crime> crimes = crimeRepository.findAll();
+				return crimes.stream()
+								.filter(crime -> (crime.getReportDate().isAfter(fromDate) || crime.getReportDate().isEqual(fromDate)) &&
+												(crime.getReportDate().isBefore(toDate) || crime.getReportDate().isEqual(toDate)))
+								.map(this::convertToCrimeToApp)
+								.collect(Collectors.toList());
+		}
+
 }

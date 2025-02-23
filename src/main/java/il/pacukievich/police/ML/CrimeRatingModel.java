@@ -21,24 +21,28 @@ public class CrimeRatingModel {
 								.l2(0.0001)  // L2 regularization to prevent overfitting
 								.list();
 
-				// First hidden layer with more neurons
+				// First hidden layer with more neurons and dropout
 				config.layer(0, new DenseLayer.Builder().nIn(3).nOut(64)
 								.activation(Activation.RELU)
+								.dropOut(0.5)  // Dropout with 50% probability
 								.build());
 
-				// Second hidden layer
+				// Second hidden layer with dropout
 				config.layer(1, new DenseLayer.Builder().nIn(64).nOut(32)
 								.activation(Activation.RELU)
+								.dropOut(0.5)  // Dropout with 50% probability
 								.build());
 
-				// Third hidden layer
+				// Third hidden layer with dropout
 				config.layer(2, new DenseLayer.Builder().nIn(32).nOut(16)
 								.activation(Activation.RELU)
+								.dropOut(0.5)  // Dropout with 50% probability
 								.build());
 
-				// Fourth hidden layer
+				// Fourth hidden layer with dropout
 				config.layer(3, new DenseLayer.Builder().nIn(16).nOut(8)
 								.activation(Activation.RELU)
+								.dropOut(0.5)  // Dropout with 50% probability
 								.build());
 
 				// Output layer with Mean Absolute Error loss function
@@ -71,6 +75,7 @@ public class CrimeRatingModel {
 				// Постобработка для ограничения рейтинга в диапазоне от 0 до 10
 				return postprocessRating(rating);
 		}
+
 		// Функция постобработки для ограничения значения рейтинга
 		private static double postprocessRating(double rating) {
 				// Ограничиваем результат в диапазоне от 0 до 10
