@@ -8,8 +8,6 @@ import il.pacukievich.police.utils.LocationUtils;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 
 import java.io.File;
-import java.time.Duration;
-import java.time.LocalDateTime;
 
 public class CrimeRatingService {
 
@@ -27,11 +25,9 @@ public class CrimeRatingService {
 				}
 
 				Crime crime = new Crime();
-				crime.setLocation(new Location(55.7558, 37.6173, "Moscow"));
+				crime.setLocation(new Location(55.7557, 37.6173, "Moscow"));
 				crime.setSenderLocation(new Location(55.7558, 37.6177, "Moscow"));
 				crime.setDescription("Михаил Иванович Иванов +375(44)456-78-90");
-				crime.setReportDate(LocalDateTime.now().minusMinutes(1));
-
 				double distance = LocationUtils.calculateDistance(
 								crime.getLocation().getLatitude(),
 								crime.getLocation().getLongitude(),
@@ -43,7 +39,6 @@ public class CrimeRatingService {
 				boolean hasPhone = CrimeUtils.containsPhoneNumber(crime.getDescription());
 				boolean hasName = CrimeUtils.containsValidName(crime.getDescription());
 
-				double minutesSinceReport = Duration.between(crime.getReportDate(), LocalDateTime.now()).toMinutes();
 
 				double rating = CrimeRatingModel.predict(model, distance, hasPhone, hasName);
 				System.out.println("Рейтинг заявления: " + rating);

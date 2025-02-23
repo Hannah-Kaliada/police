@@ -32,7 +32,7 @@ public class CrimeRatingModel {
 								.activation(Activation.RELU)
 								.build());
 
-				config.layer(3, new OutputLayer.Builder(LossFunctions.LossFunction.MSE)
+				config.layer(3, new OutputLayer.Builder(LossFunctions.LossFunction.MEAN_ABSOLUTE_ERROR)
 								.nIn(8).nOut(1)
 								.activation(Activation.IDENTITY)
 								.build());
