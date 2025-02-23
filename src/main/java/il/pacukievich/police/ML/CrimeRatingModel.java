@@ -17,22 +17,32 @@ public class CrimeRatingModel {
 				NeuralNetConfiguration.ListBuilder config = new NeuralNetConfiguration.Builder()
 								.seed(123)
 								.optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-								.updater(new Adam(0.001))
+								.updater(new Adam(0.0001))  // Adam optimizer with learning rate
+								.l2(0.0001)  // L2 regularization to prevent overfitting
 								.list();
 
-				config.layer(0, new DenseLayer.Builder().nIn(3).nOut(32)
+				// First hidden layer with more neurons
+				config.layer(0, new DenseLayer.Builder().nIn(3).nOut(64)
 								.activation(Activation.RELU)
 								.build());
 
-				config.layer(1, new DenseLayer.Builder().nIn(32).nOut(16)
+				// Second hidden layer
+				config.layer(1, new DenseLayer.Builder().nIn(64).nOut(32)
 								.activation(Activation.RELU)
 								.build());
 
-				config.layer(2, new DenseLayer.Builder().nIn(16).nOut(8)
+				// Third hidden layer
+				config.layer(2, new DenseLayer.Builder().nIn(32).nOut(16)
 								.activation(Activation.RELU)
 								.build());
 
-				config.layer(3, new OutputLayer.Builder(LossFunctions.LossFunction.MEAN_ABSOLUTE_ERROR)
+				// Fourth hidden layer
+				config.layer(3, new DenseLayer.Builder().nIn(16).nOut(8)
+								.activation(Activation.RELU)
+								.build());
+
+				// Output layer with Mean Absolute Error loss function
+				config.layer(4, new OutputLayer.Builder(LossFunctions.LossFunction.MEAN_ABSOLUTE_ERROR)
 								.nIn(8).nOut(1)
 								.activation(Activation.IDENTITY)
 								.build());
