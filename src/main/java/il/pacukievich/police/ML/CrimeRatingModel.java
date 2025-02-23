@@ -66,6 +66,14 @@ public class CrimeRatingModel {
 		public static double predict(MultiLayerNetwork model, double distance, boolean hasPhone, boolean hasName) {
 				INDArray input = Nd4j.create(new double[][]{{distance, hasPhone ? 1 : 0, hasName ? 1 : 0}});
 				INDArray output = model.output(input);
-				return output.getDouble(0);
+				double rating = output.getDouble(0);
+
+				// Постобработка для ограничения рейтинга в диапазоне от 0 до 10
+				return postprocessRating(rating);
+		}
+		// Функция постобработки для ограничения значения рейтинга
+		private static double postprocessRating(double rating) {
+				// Ограничиваем результат в диапазоне от 0 до 10
+				return Math.max(0, Math.min(rating, 10));
 		}
 }
