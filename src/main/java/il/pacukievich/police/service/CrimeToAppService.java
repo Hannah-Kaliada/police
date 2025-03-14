@@ -38,6 +38,13 @@ public class CrimeToAppService {
 								.collect(Collectors.toList());
 		}
 
+		public List<Crime> getUnderReviewCrimes() {
+				List<Crime> crimes = crimeRepository.findAll();
+				return crimes.stream()
+								.filter(crime -> crime.getStatus() == InvestigationStatus.UNDER_REVIEW)
+								.collect(Collectors.toList());
+		}
+
 		public List<CrimeToApp> getCrimesBeforeDate(LocalDateTime date) {
 				List<Crime> crimes = crimeRepository.findAll();
 				return crimes.stream()

@@ -2,7 +2,6 @@ package il.pacukievich.police.service;
 
 import il.pacukievich.police.ML.CrimeRatingModel;
 import il.pacukievich.police.entities.Crime;
-import il.pacukievich.police.entities.Location;
 import il.pacukievich.police.utils.CrimeUtils;
 import il.pacukievich.police.utils.LocationUtils;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
@@ -11,23 +10,20 @@ import java.io.File;
 
 public class CrimeRatingService {
 
-		public static void main(String[] args) {
+		private static MultiLayerNetwork model;
 
-				MultiLayerNetwork model = null;
+		static {
 				try {
 						model = MultiLayerNetwork.load(new File("crime_rating_model.zip"), true);
 						System.out.println("Модель успешно загружена!");
 				} catch (Exception e) {
 						System.err.println("Ошибка при загрузке модели: " + e.getMessage());
-
 						model = CrimeRatingModel.createModel();
 						System.out.println("Создана новая модель!");
 				}
+		}
 
-				Crime crime = new Crime();
-				crime.setLocation(new Location(55.7557, 37.6173, "Moscow"));
-				crime.setSenderLocation(new Location(55.7558, 37.6177, "Moscow"));
-				crime.setDescription("Михаил Иванович Иванов +375(44)456-78-90");
+		public static double evaluateCrimeRating(Crime crime) {
 				double distance = LocationUtils.calculateDistance(
 								crime.getLocation().getLatitude(),
 								crime.getLocation().getLongitude(),
@@ -35,12 +31,9 @@ public class CrimeRatingService {
 								crime.getSenderLocation().getLongitude()
 				);
 
-
 				boolean hasPhone = CrimeUtils.containsPhoneNumber(crime.getDescription());
 				boolean hasName = CrimeUtils.containsValidName(crime.getDescription());
 
-
-				double rating = CrimeRatingModel.predict(model, distance, hasPhone, hasName);
-				System.out.println("Рейтинг заявления: " + rating);
+				return CrimeRatingModel.predict(model, distance, hasPhone, hasName);
 		}
 }

@@ -4,6 +4,7 @@ import il.pacukievich.police.entities.Crime;
 import il.pacukievich.police.entities.InvestigationStatus;
 import il.pacukievich.police.entities.Location;
 import il.pacukievich.police.entities.TypeOfCrime;
+import il.pacukievich.police.service.CrimeRatingService;
 import il.pacukievich.police.service.CrimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static il.pacukievich.police.service.CrimeRatingService.evaluateCrimeRating;
 
 @RestController
 @RequestMapping("/submit-report")
@@ -78,8 +82,15 @@ public class CrimeController {
 				Crime crime = crimeService.getCrimeById(id);
 				return new ResponseEntity<>(crime, HttpStatus.OK);
 		}
-
-
+		@GetMapping("/{id}/rating")
+		public ResponseEntity<Double> getCrimeRating(@PathVariable Long id) {
+				Crime crime = crimeService.getCrimeById(id);
+				if (crime == null) {
+						return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				}
+				double rating = CrimeRatingService.evaluateCrimeRating(crime);
+				return new ResponseEntity<>(rating, HttpStatus.OK);
+		}
 		@PutMapping("/{id}")
 		public ResponseEntity<Crime> updateCrime(
 						@PathVariable Long id,

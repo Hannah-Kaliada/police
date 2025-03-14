@@ -33,6 +33,12 @@ public class CrimeToAppController {
 				return ResponseEntity.ok(crimes);
 		}
 
+		@GetMapping("/under-review")
+		public ResponseEntity<List<Crime>> getUnderReviewCrimes() {
+				List<Crime> crimes = crimeToAppService.getUnderReviewCrimes();
+				return ResponseEntity.ok(crimes);
+		}
+
 		@GetMapping("/before-date")
 		public ResponseEntity<List<CrimeToApp>> getCrimesBeforeDate(@RequestParam("date") String date) {
 				LocalDateTime parsedDate = LocalDateTime.parse(date);
