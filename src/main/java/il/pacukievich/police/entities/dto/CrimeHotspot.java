@@ -15,8 +15,6 @@ public class CrimeHotspot {
 				this.crimeCount = crimeCount;
 		}
 
-		// Геттеры и сеттеры
-
 		public double getCenterLatitude() {
 				return centerLatitude;
 		}

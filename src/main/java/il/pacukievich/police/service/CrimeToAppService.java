@@ -67,31 +67,27 @@ public class CrimeToAppService {
 		}
 
 		public List<Crime> getUnderReviewCrimes() {
-				// Получаем результат из native query, который возвращает List<Object[]>
 				List<Object[]> results = crimeRepository.findUnderReviewCrimesNative();
 
-				// Преобразуем каждый массив Object[] в объект Crime
 				return results.stream()
 								.map(result -> {
 										Crime crime = new Crime();
 										InvestigationStatusConverter statusConverter = new InvestigationStatusConverter();
-										// Преобразуем результат в объект Crime
-										crime.setId((Long) result[0]);  // Пример: результат по индексу 0 - id
+
+										crime.setId((Long) result[0]);
 										TypeOfCrimeConverter typeConverter = new TypeOfCrimeConverter();
 										String description = (String) result[1];
 										crime.setDescription(description);
-										String typeString = (String) result[3];  // предполагается, что тип преступления в результатах под индексом 3
+										String typeString = (String) result[3];
 										TypeOfCrime type = typeConverter.convertToEntityAttribute(typeString);
-										crime.setType(type);  // Преобразуем строку в TypeOfCrime
+										crime.setType(type);
 										InvestigationStatus status = statusConverter.convertToEntityAttribute((String) result[2]);
-										crime.setStatus(status); // Преобразование строки в статус
-										crime.setLocation(new Location());  // Убедитесь, что заполняете локацию, если необходимо
+										crime.setStatus(status);
+										crime.setLocation(new Location());
 
-										// Пример для BigDecimal координат
 										crime.getLocation().setLatitude((BigDecimal) result[4]);
 										crime.getLocation().setLongitude((BigDecimal) result[5]);
 
-										// Устанавливаем другие поля, если они присутствуют в результатах
 										return crime;
 								})
 								.collect(Collectors.toList());

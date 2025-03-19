@@ -15,7 +15,6 @@ public class CrimeAnalysisController {
 		@Autowired
 		private CrimeAnalysisService crimeAnalysisService;
 
-		// Endpoint для получения горячих точек
 		// Пример запроса: GET /api/crime-analysis/hotspots?gridSize=0.01
 		@GetMapping("/hotspots")
 		public ResponseEntity<List<CrimeHotspot>> getCrimeHotspots(@RequestParam double gridSize) {
