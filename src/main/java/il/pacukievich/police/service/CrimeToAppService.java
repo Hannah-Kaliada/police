@@ -2,12 +2,16 @@ package il.pacukievich.police.service;
 
 import il.pacukievich.police.entities.Crime;
 import il.pacukievich.police.entities.InvestigationStatus;
+import il.pacukievich.police.entities.Location;
+import il.pacukievich.police.entities.TypeOfCrime;
 import il.pacukievich.police.entities.dto.CrimeToApp;
+import il.pacukievich.police.entities.utilities.InvestigationStatusConverter;
+import il.pacukievich.police.entities.utilities.TypeOfCrimeConverter;
 import il.pacukievich.police.repository.CrimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,19 +33,67 @@ public class CrimeToAppService {
 								.collect(Collectors.toList());
 		}
 
+
 		public List<CrimeToApp> getOpenOrApprovedCrimes() {
-				List<Crime> crimes = crimeRepository.findAll();
-				return crimes.stream()
-								.filter(crime -> crime.getStatus() == InvestigationStatus.OPEN ||
-												crime.getStatus() == InvestigationStatus.APPROVED)
-								.map(this::convertToCrimeToApp)
+
+				List<Object[]> results = crimeRepository.findOpenOrApprovedCrimesNative();
+
+				return results.stream()
+								.map(result -> {
+										CrimeToApp crimeToApp = new CrimeToApp();
+										InvestigationStatusConverter statusConverter = new InvestigationStatusConverter();
+										crimeToApp.setDescription((String) result[1]);
+										String statusString = (String) result[2];
+										InvestigationStatus status = statusConverter.convertToEntityAttribute(statusString);
+										crimeToApp.setStatus(status);
+
+										TypeOfCrimeConverter typeConverter = new TypeOfCrimeConverter();
+										String typeString = (String) result[3];
+										TypeOfCrime type = typeConverter.convertToEntityAttribute(typeString);
+										crimeToApp.setType(type);
+
+										crimeToApp.setLocation(new Location());
+
+
+										BigDecimal latitude = (BigDecimal) result[4];
+										BigDecimal longitude = (BigDecimal) result[5];
+
+										crimeToApp.getLocation().setLatitude(latitude);
+										crimeToApp.getLocation().setLongitude(longitude);
+
+										return crimeToApp;
+								})
 								.collect(Collectors.toList());
 		}
 
 		public List<Crime> getUnderReviewCrimes() {
-				List<Crime> crimes = crimeRepository.findAll();
-				return crimes.stream()
-								.filter(crime -> crime.getStatus() == InvestigationStatus.UNDER_REVIEW)
+				// Получаем результат из native query, который возвращает List<Object[]>
+				List<Object[]> results = crimeRepository.findUnderReviewCrimesNative();
+
+				// Преобразуем каждый массив Object[] в объект Crime
+				return results.stream()
+								.map(result -> {
+										Crime crime = new Crime();
+										InvestigationStatusConverter statusConverter = new InvestigationStatusConverter();
+										// Преобразуем результат в объект Crime
+										crime.setId((Long) result[0]);  // Пример: результат по индексу 0 - id
+										TypeOfCrimeConverter typeConverter = new TypeOfCrimeConverter();
+										String description = (String) result[1];
+										crime.setDescription(description);
+										String typeString = (String) result[3];  // предполагается, что тип преступления в результатах под индексом 3
+										TypeOfCrime type = typeConverter.convertToEntityAttribute(typeString);
+										crime.setType(type);  // Преобразуем строку в TypeOfCrime
+										InvestigationStatus status = statusConverter.convertToEntityAttribute((String) result[2]);
+										crime.setStatus(status); // Преобразование строки в статус
+										crime.setLocation(new Location());  // Убедитесь, что заполняете локацию, если необходимо
+
+										// Пример для BigDecimal координат
+										crime.getLocation().setLatitude((BigDecimal) result[4]);
+										crime.getLocation().setLongitude((BigDecimal) result[5]);
+
+										// Устанавливаем другие поля, если они присутствуют в результатах
+										return crime;
+								})
 								.collect(Collectors.toList());
 		}
 

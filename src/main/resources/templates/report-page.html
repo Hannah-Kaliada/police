@@ -161,7 +161,7 @@
         }
     </style>
     <script src="https://api-maps.yandex.ru/2.1/?apikey=YOUR_YANDEX_API_KEY&lang=ru_RU" type="text/javascript"></script>
-    <script>
+    <script th:inline="none">
         let map;
 
         function initializeMap(coordinates, userCoordinates) {
@@ -194,9 +194,21 @@
 
         let markerOffset = 0;
         function addCrimeMarker(coordinates, description) {
+            // Округляем координаты до 6 знаков после запятой
+            const roundedCoordinates = [
+                coordinates[0].toFixed(6), // Широта
+                coordinates[1].toFixed(6)  // Долгота
+            ];
+
+            // Преобразуем обратно в числа
+            const finalCoordinates = [
+                parseFloat(roundedCoordinates[0]),
+                parseFloat(roundedCoordinates[1])
+            ];
+
             const offsetCoordinates = [
-                coordinates[0] + (markerOffset * 0.00001),
-                coordinates[1] + (markerOffset * 0.00001)
+                finalCoordinates[0] + (markerOffset * 0.00001),
+                finalCoordinates[1] + (markerOffset * 0.00001)
             ];
             markerOffset++;
 
@@ -204,7 +216,8 @@
                 hintContent: "Преступление",
                 balloonContent: description
             }, {
-                preset: 'islands#redDotIcon'
+                preset: 'islands#redDotIcon',
+                zIndex: 100  // Задаем высокий z-index, чтобы маркеры были поверх полигонов
             });
 
             map.geoObjects.add(placemark);
@@ -216,9 +229,20 @@
                 .then(data => {
                     console.log("Загруженные преступления:", data);
                     data.forEach(crime => {
-                        const coordinates = [crime.location.latitude, crime.location.longitude];
-                        console.log("Добавление маркера на координатах:", coordinates);
-                        addCrimeMarker(coordinates, crime.description);
+                        // Округляем координаты до 6 знаков после запятой
+                        const coordinates = [
+                            crime.location.latitude.toFixed(6), // Широта
+                            crime.location.longitude.toFixed(6) // Долгота
+                        ];
+
+                        // Преобразуем обратно в числа
+                        const finalCoordinates = [
+                            parseFloat(coordinates[0]),
+                            parseFloat(coordinates[1])
+                        ];
+
+                        console.log("Добавление маркера на координатах:", finalCoordinates);
+                        addCrimeMarker(finalCoordinates, crime.description);
                     });
                 })
                 .catch(error => console.error("Ошибка загрузки данных:", error));
@@ -251,6 +275,7 @@
                         ];
                         initializeMap(userCoords, userCoords);
                         loadCrimes();
+                        loadCrimeHotspots(0.01);
                     },
                     error => {
                         console.error("Ошибка геолокации:", error);
@@ -281,6 +306,88 @@
                 description.value += "\nАдрес: " + address;
             }
         }
+        function loadCrimeHotspots(gridSize) {
+            fetch(`http://localhost:8080/inapi/crime-analysis/hotspots?gridSize=${gridSize}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Горячие точки преступлений:", data);
+                    data.forEach(hotspot => {
+                        addCrimeGrid(hotspot.centerLatitude, hotspot.centerLongitude, 500, hotspot.crimeCount, hotspot.dominantCrimeType);
+                    });
+                })
+                .catch(error => console.error("Ошибка загрузки горячих точек:", error));
+        }
+
+
+        function addCrimeGrid(lat, lon, radius, crimeCount, dominantCrimeType) {
+            var color;
+            if (crimeCount >= 5) {
+                color = "rgba(255, 0, 0, 0.8)"; // Красный для 5+ преступлений
+            } else if (crimeCount >= 3) {
+                color = "rgba(255, 165, 0, 0.8)"; // Оранжевый для 3-4 преступлений
+            } else if (crimeCount >= 1) {
+                color = "rgba(255, 255, 0, 0.8)"; // Желтый для 1-2 преступлений
+            } else {
+                color = "rgba(0, 255, 0, 0.7)"; // Зеленый для 0 преступлений
+            }
+
+            // Если доминирующий тип преступления — убийство, задаем красный цвет
+            if (dominantCrimeType === "MURDER") {
+                color = "rgba(255, 0, 0, 0.8)";
+            }
+
+            // Объект для перевода типа преступления
+            var crimeTypeTranslation = {
+                "MURDER": "Убийство",
+                "THEFT": "Кража",
+                "ASSAULT": "Нападение",
+                "ROBBERY": "Разбой",
+                "FRAUD": "Мошенничество",
+                "BURGLARY": "Кража со взломом",
+                "KIDNAPPING": "Похищение человека",
+                "DRUG_TRAFFICKING": "Наркоторговля",
+                "VANDALISM": "Вандализм",
+                "ARSON": "Поджог",
+                "BRIBERY": "Взяточничество",
+                "EXTORTION": "Вымогательство",
+                "FORGERY": "Подделка документов",
+                "CYBERCRIME": "Киберпреступление",
+                "HIJACKING": "Угон",
+                "TERRORISM": "Терроризм",
+                "HUMAN_TRAFFICKING": "Торговля людьми",
+                "MONEY_LAUNDERING": "Отмывание денег",
+                "PERJURY": "Лжесвидетельство",
+                "PUBLIC_INTOXICATION": "Нахождение в общественном месте в состоянии опьянения"
+            };
+
+            var dominantCrimeTypeRu = dominantCrimeType ? (crimeTypeTranslation[dominantCrimeType] || dominantCrimeType) : "";
+
+            if (dominantCrimeTypeRu) {
+                var hintContentText
+                    = "<br>Доминирующий тип: " + dominantCrimeTypeRu;
+            }
+
+            var circle = new ymaps.Circle([
+                [lat-0.0045, lon-0.01],
+                radius
+            ], {
+                hintContent: hintContentText
+            }, {
+                fillColor: color,
+                fillOpacity: 0.6,
+                strokeColor: "rgba(0, 0, 0, 0)",
+                strokeWidth: 0,
+                zIndex: 0
+            });
+
+            map.geoObjects.add(circle);
+        }
+
+
+
+
+
+
     </script>
 </head>
 <body>

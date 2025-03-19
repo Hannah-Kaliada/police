@@ -5,9 +5,16 @@ import il.pacukievich.police.entities.utilities.TypeOfCrimeConverter;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+
 @Entity
 @Table(name = "crimes")
 public class Crime {
+		private static final GeometryFactory geometryFactory = new GeometryFactory();
 
 		@Id
 		@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +49,6 @@ public class Crime {
 		@Convert(converter = InvestigationStatusConverter.class)
 		@Column(nullable = false)
 		private InvestigationStatus status;
-
 
 		public Long getId() {
 				return id;
@@ -98,6 +104,5 @@ public class Crime {
 		public void setStatus(InvestigationStatus status) {
 				this.status = status;
 		}
-
 
 }

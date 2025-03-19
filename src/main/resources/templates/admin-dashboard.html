@@ -480,7 +480,7 @@
     async function loadCrimesToReview() {
         try {
             const response = await fetch('http://localhost:8080/api/crimes/under-review');
-            let crimes = await response.();
+            let crimes = await response.json()
 
             const tableBody = document.querySelector('#crimesToReviewTable tbody');
             tableBody.innerHTML = '';
